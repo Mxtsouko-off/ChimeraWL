@@ -8,7 +8,7 @@ import asyncio
 import random
 
 intents = disnake.Intents.default()
-bot = commands.Bot(command_prefix='c+', intents=intents)
+bot = commands.Bot(command_prefix='c+', intents=intents, help_command=None)
 authorized_user_id = 723256412674719795
 json_file = "uuids.json"
 user_stats = {}
