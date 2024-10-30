@@ -7,7 +7,7 @@ import os
 import asyncio
 import random
 
-intents = disnake.Intents.default()
+intents = disnake.Intents.all()
 bot = commands.Bot(command_prefix='c+', intents=intents, help_command=None)
 authorized_user_id = 723256412674719795
 json_file = "uuids.json"
@@ -83,7 +83,7 @@ async def statut():
 
 embed_color = 0x383d53
 
-@bot.command()
+@bot.slash_command()
 async def add(ctx, uuid: str):
     if ctx.author.id != authorized_user_id:
         return
@@ -95,7 +95,7 @@ async def add(ctx, uuid: str):
         embed.set_thumbnail(url=ctx.guild.icon.url)
     await ctx.send(embed=embed)
 
-@bot.command()
+@bot.slash_command()
 async def delete(ctx, uuid: str):
     if ctx.author.id != authorized_user_id:
         return
@@ -110,7 +110,7 @@ async def delete(ctx, uuid: str):
         embed.set_thumbnail(url=ctx.guild.icon.url)
     await ctx.send(embed=embed)
 
-@bot.command()
+@bot.slash_command()
 async def tempdel(ctx, uuid: str):
     if ctx.author.id != authorized_user_id:
         return
@@ -128,7 +128,7 @@ async def tempdel(ctx, uuid: str):
     uuids.append(uuid)
     save_uuids(uuids)
 
-@bot.command()
+@bot.slash_command()
 async def show(ctx):
     if ctx.author.id != authorized_user_id:
         return
@@ -139,7 +139,7 @@ async def show(ctx):
         embed.set_thumbnail(url=ctx.guild.icon.url)
     await ctx.send(embed=embed)
 
-@bot.command()
+@bot.slash_command()
 async def help(ctx):
     if ctx.author.id != authorized_user_id:
         return
