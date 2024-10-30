@@ -19,6 +19,14 @@ app = Flask('')
 def main():
     return f"Logged in as {bot.user}."
 
+@app.route('/uuids')
+def display_uuids():
+    with open(json_file, "r") as f:
+        uuids = json.load(f)
+    return {
+        "UUIDs": uuids
+    }, 200 
+
 def run():
     app.run(host="0.0.0.0", port=8080)
 
