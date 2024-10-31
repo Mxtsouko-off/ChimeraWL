@@ -36,7 +36,8 @@ if not os.path.exists(json_file):
 # Chargement des UUIDs depuis le fichier JSON
 def load_uuids():
     with open(json_file, "r") as f:
-        return json.load(f)
+        uuids = json.load(f)
+    return uuids if isinstance(uuids, list) else []
 
 # Sauvegarde des UUIDs dans le fichier JSON
 def save_uuids(uuids_list):
@@ -73,9 +74,11 @@ embed_color = 0x383d53
 
 @bot.slash_command()
 async def add(ctx, uuid: str):
+    await ctx.response.defer()  # Déclenche le defer si la commande prend du temps
     if ctx.author.id != authorized_user_id:
         await ctx.send("You do not have permission to execute this command.")
         return
+
     uuids = load_uuids()
     if uuid not in uuids:
         uuids.append(uuid)
@@ -129,12 +132,14 @@ async def show(ctx):
 
 @bot.slash_command()
 async def help(ctx):
+    await ctx.response.defer()  # Ajout du defer
     if ctx.author.id != authorized_user_id:
         await ctx.send("You do not have permission to execute this command.")
         return
+
     embed = disnake.Embed(title="ChimeraWL Help", color=embed_color)
     embed.add_field(name="/add <uuid>", value="Ajoute un UUID dans le fichier JSON.", inline=False)
-    embed.add_field(name="/del <uuid>", value="Supprime un UUID spécifique du fichier JSON.", inline=False)
+    embed.add_field(name="/delete <uuid>", value="Supprime un UUID spécifique du fichier JSON.", inline=False)
     embed.add_field(name="/tempdel <uuid>", value="Supprime temporairement un UUID (5 minutes) du fichier JSON.", inline=False)
     embed.add_field(name="/show", value="Affiche tous les UUID stockés dans le fichier JSON.", inline=False)
     embed.add_field(name="/help", value="Affiche ce message d'aide.", inline=False)
