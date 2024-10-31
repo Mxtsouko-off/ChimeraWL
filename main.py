@@ -24,8 +24,8 @@ def display_uuids():
     with open(json_file, "r") as f:
         uuids = json.load(f)
     return {
-        "UUIDs": uuids
-    }, 200 
+        "UUIDs": uuids["UUIDs"]
+    }, 200
 
 def run():
     app.run(host="0.0.0.0", port=8080)
@@ -38,15 +38,16 @@ keep_alive()
 
 if not os.path.exists(json_file):
     with open(json_file, "w") as f:
-        json.dump([], f)
+        json.dump({"UUIDs": []}, f)
 
 def load_uuids():
     with open(json_file, "r") as f:
-        return json.load(f)
+        data = json.load(f)
+    return data.get("UUIDs", [])
 
-def save_uuids(data):
+def save_uuids(uuids):
     with open(json_file, "w") as f:
-        json.dump(data, f, indent=4)
+        json.dump({"UUIDs": uuids}, f, indent=4)
 
 def save_stats():
     with open('user_stats.json', 'w') as f:
@@ -160,6 +161,5 @@ async def help(ctx):
     if ctx.guild.icon:
         embed.set_thumbnail(url=ctx.guild.icon.url)
     await ctx.send(embed=embed)
-
 
 bot.run(os.getenv('TOKEN'))
