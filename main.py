@@ -19,18 +19,7 @@ app = Flask('')
 def main():
     return f"Logged in as {bot.user}."
 
-@app.route('/uuids')
-def display_uuids():
-    with open(json_file, "r") as f:
-        uuids = json.load(f)
-    if isinstance(uuids, dict) and "UUIDs" in uuids:
-        return {
-            "UUIDs": uuids["UUIDs"]
-        }, 200
-    else:
-        return {
-            "error": "Le format du fichier JSON est incorrect."
-        }, 500
+
 
 
 def run():
@@ -42,22 +31,25 @@ def keep_alive():
 
 keep_alive()
 
+json_file = "uuids.json"
+
 if not os.path.exists(json_file):
     with open(json_file, "w") as f:
-        json.dump({"UUIDs": []}, f)
+        json.dump([], f, indent=4)
 
 def load_uuids():
     with open(json_file, "r") as f:
-        data = json.load(f)
-    return data.get("UUIDs", [])
+        return json.load(f)
 
-def save_uuids(uuids):
+def save_uuids(uuids_list):
     with open(json_file, "w") as f:
-        json.dump({"UUIDs": uuids}, f, indent=4)
+        json.dump(uuids_list, f, indent=4)
 
-def save_stats():
-    with open('user_stats.json', 'w') as f:
-        json.dump(user_stats, f, indent=4)
+@app.route('/uuids')
+def display_uuids():
+    uuids = load_uuids()
+    return uuids, 200
+
 
 @bot.event
 async def on_ready():
@@ -78,7 +70,7 @@ async def on_ready():
 
                 user_stats[message.author.id]["messages"] += 1
     
-    save_stats()
+
 
 @tasks.loop(seconds=3)
 async def statut():
@@ -157,15 +149,18 @@ async def show(ctx):
 @bot.slash_command()
 async def help(ctx):
     if ctx.author.id != authorized_user_id:
+        ctx.send('you not have permission to execute commande, only mxtsouko, /use for information')
         return
     embed = disnake.Embed(title="ChimeraWL Help", color=embed_color)
-    embed.add_field(name="+c add <uuid>", value="Ajoute un UUID dans le fichier JSON.", inline=False)
-    embed.add_field(name="+c del <uuid>", value="Supprime un UUID spécifique du fichier JSON.", inline=False)
-    embed.add_field(name="+c tempdel <uuid>", value="Supprime temporairement un UUID (5 minutes) du fichier JSON.", inline=False)
-    embed.add_field(name="+c show", value="Affiche tous les UUID stockés dans le fichier JSON.", inline=False)
-    embed.add_field(name="+c help", value="Affiche ce message d'aide.", inline=False)
+    embed.add_field(name="/add <uuid>", value="Ajoute un UUID dans le fichier JSON.", inline=False)
+    embed.add_field(name="/del <uuid>", value="Supprime un UUID spécifique du fichier JSON.", inline=False)
+    embed.add_field(name="/tempdel <uuid>", value="Supprime temporairement un UUID (5 minutes) du fichier JSON.", inline=False)
+    embed.add_field(name="/show", value="Affiche tous les UUID stockés dans le fichier JSON.", inline=False)
+    embed.add_field(name="/help", value="Affiche ce message d'aide.", inline=False)
     if ctx.guild.icon:
         embed.set_thumbnail(url=ctx.guild.icon.url)
     await ctx.send(embed=embed)
+    
+
 
 bot.run(os.getenv('TOKEN'))
