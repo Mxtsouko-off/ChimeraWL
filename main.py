@@ -23,9 +23,15 @@ def main():
 def display_uuids():
     with open(json_file, "r") as f:
         uuids = json.load(f)
-    return {
-        "UUIDs": uuids["UUIDs"]
-    }, 200
+    if isinstance(uuids, dict) and "UUIDs" in uuids:
+        return {
+            "UUIDs": uuids["UUIDs"]
+        }, 200
+    else:
+        return {
+            "error": "Le format du fichier JSON est incorrect."
+        }, 500
+
 
 def run():
     app.run(host="0.0.0.0", port=8080)
